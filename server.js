@@ -46,25 +46,41 @@ app.post('/employee', async (req, res) => {
       }
       const newEmployee = new Contact({ name, email, phone });
       await newEmployee.save();
-      res.status(201).json({ message: 'Contact added successfully', data: newEmployee });
+      res.status(201).json({ message: 'Data added successfully', data: newEmployee });
     } catch (error) {
       res.status(500).json({ message: 'Error adding contact', error });
     }
   });
 
-  app.delete('/contacts/:id', async (req, res) => {
+  app.delete('/employee/:id', async (req, res) => {
     try {
       const { id } = req.params;
       const result = await Contact.findByIdAndDelete(id);
       if (result) {
-        res.status(200).json({ message: 'Contact deleted successfully' });
+        res.status(200).json({ message: 'Data deleted successfully' });
       } else {
-        res.status(404).json({ message: 'Contact not found' });
+        res.status(404).json({ message: 'Employee not found' });
       }
     } catch (error) {
-      res.status(500).json({ message: 'Error deleting contact', error });
+      res.status(500).json({ message: 'Error deleting data', error });
     }
   });
+
+  app.put('/employee/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { name, email, phone } = req.body;
+      const updatedContact = await Contact.findByIdAndUpdate(id, { name, email, phone }, { new: true });
+      if (updatedContact) {
+        res.status(200).json({ message: 'Data updated successfully', data: updatedContact });
+      } else {
+        res.status(404).json({ message: 'Employee not found' });
+      }
+    } catch (error) {
+      res.status(500).json({ message: 'Error updating data', error });
+    }
+  });
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
