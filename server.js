@@ -36,6 +36,36 @@ app.get("/employee", async (req, res) => {
   }
 });
 
+app.post('/employee', async (req, res) => {
+    try {
+      const { name, email, phone } = req.body;
+      // Check if email already exists
+      const existingEmployee = await Contact.findOne({ email });
+      if (existingEmployee) {
+        return res.status(400).json({ error: 'DuplicateEmail', message: 'Email already exists' });
+      }
+      const newEmployee = new Contact({ name, email, phone });
+      await newEmployee.save();
+      res.status(201).json({ message: 'Contact added successfully', data: newEmployee });
+    } catch (error) {
+      res.status(500).json({ message: 'Error adding contact', error });
+    }
+  });
+
+  app.delete('/contacts/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const result = await Contact.findByIdAndDelete(id);
+      if (result) {
+        res.status(200).json({ message: 'Contact deleted successfully' });
+      } else {
+        res.status(404).json({ message: 'Contact not found' });
+      }
+    } catch (error) {
+      res.status(500).json({ message: 'Error deleting contact', error });
+    }
+  });
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
