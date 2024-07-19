@@ -52,19 +52,21 @@ app.post('/employee', async (req, res) => {
 });
 
 
-  app.delete('/employee/:id', async (req, res) => {
-    try {
-      const { id } = req.params;
-      const result = await Contact.findByIdAndDelete(id);
-      if (result) {
-        res.status(200).json({ message: 'Data deleted successfully' });
-      } else {
-        res.status(404).json({ message: 'Employee not found' });
-      }
-    } catch (error) {
-      res.status(500).json({ message: 'Error deleting data', error });
+  // Delete a specific employee by ID
+app.delete('/employee/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await Contact.findByIdAndDelete(id);
+    if (result) {
+      res.status(200).json({ message: 'Data deleted successfully' });
+    } else {
+      res.status(404).json({ message: 'Employee not found' });
     }
-  });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting data', error });
+  }
+});
+
 
   app.put('/employee/:id', async (req, res) => {
     try {
