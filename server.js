@@ -3,7 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const app = express();
-const PORT = process.env.PORT || 6000;
+const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(express.json());
@@ -37,20 +37,20 @@ app.get("/employee", async (req, res) => {
 });
 
 app.post('/employee', async (req, res) => {
-    try {
-      const { name, email, phone } = req.body;
-      // Check if email already exists
-      const existingEmployee = await Contact.findOne({ email });
-      if (existingEmployee) {
-        return res.status(400).json({ error: 'DuplicateEmail', message: 'Email already exists' });
-      }
-      const newEmployee = new Contact({ name, email, phone });
-      await newEmployee.save();
-      res.status(201).json({ message: 'Data added successfully', data: newEmployee });
-    } catch (error) {
-      res.status(500).json({ message: 'Error adding contact', error });
+  try {
+    const { name, email, phone } = req.body;
+    const existingEmployee = await Contact.findOne({ email });
+    if (existingEmployee) {
+      return res.status(400).json({ error: 'DuplicateEmail', message: 'Email already exists' });
     }
-  });
+    const newEmployee = new Contact({ name, email, phone });
+    await newEmployee.save();
+    res.status(201).json({ message: 'Data added successfully', data: newEmployee });
+  } catch (error) {
+    res.status(500).json({ message: 'Error adding contact', error });
+  }
+});
+
 
   app.delete('/employee/:id', async (req, res) => {
     try {
@@ -80,6 +80,16 @@ app.post('/employee', async (req, res) => {
       res.status(500).json({ message: 'Error updating data', error });
     }
   });
+
+  // Delete all contacts
+app.delete("/employee", async (req, res) => {
+  try {
+    await Contact.deleteMany({});
+    res.status(200).json({ message: "All employees deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting employees", error });
+  }
+});
 
 
 app.listen(PORT, () => {
