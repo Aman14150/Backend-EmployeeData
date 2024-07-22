@@ -39,40 +39,16 @@ app.get("/employee", async (req, res) => {
 // Post multiple employees
 app.post('/employee', async (req, res) => {
   try {
-    const employees = req.body; // Expecting an array of employee objects
-
-    if (!Array.isArray(employees)) {
-      return res.status(400).json({ message: 'Invalid data format. Expected an array of employees.' });
+    const { name, email, phone } = req.body;
+    const existingEmployee = await Contact.findOne({ email });
+    if (existingEmployee) {
+      return res.status(400).json({ error: 'DuplicateEmail', message: 'Email already exists' });
     }
-
-    // Check for duplicates and insert employees
-    const results = [];
-    const errors = [];
-
-    for (const employee of employees) {
-      const { name, email, phone } = employee;
-      const existingEmployee = await Contact.findOne({ email });
-
-      if (existingEmployee) {
-        errors.push({ email, message: 'Email already exists' });
-      } else {
-        const newEmployee = new Contact({ name, email, phone });
-        const savedEmployee = await newEmployee.save();
-        results.push(savedEmployee);
-      }
-    }
-
-    if (results.length > 0) {
-      res.status(201).json({
-        message: 'Employees added successfully',
-        data: results,
-        errors
-      });
-    } else {
-      res.status(400).json({ message: 'No employees added', errors });
-    }
+    const newEmployee = new Contact({ name, email, phone });
+    await newEmployee.save();
+    res.status(201).json({ message: 'Data added successfully', data: newEmployee });
   } catch (error) {
-    res.status(500).json({ message: 'Error adding employees', error });
+    res.status(500).json({ message: 'Error adding contact', error });
   }
 });
 
@@ -116,7 +92,6 @@ app.delete("/employee", async (req, res) => {
     res.status(500).json({ message: "Error deleting employees", error });
   }
 });
-
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
