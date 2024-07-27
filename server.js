@@ -26,10 +26,22 @@ const contactSchema = new mongoose.Schema({
 
 const Contact = mongoose.model("employee", contactSchema);
 
-// Get all contacts
+// Get all contacts// Get employees with optional search query
 app.get("/employee", async (req, res) => {
+  const { search } = req.query;
   try {
-    const contacts = await Contact.find();
+    let query = {};
+    if (search) {
+      const searchRegex = new RegExp(search, 'i');
+      query = {
+        $or: [
+          { name: searchRegex },
+          { email: searchRegex },
+          { phone: searchRegex },
+        ],
+      };
+    }
+    const contacts = await Contact.find(query);
     res.status(200).json(contacts);
   } catch (error) {
     res.status(500).json({ message: "Error fetching contacts", error });
