@@ -26,13 +26,13 @@ const contactSchema = new mongoose.Schema({
 
 const Contact = mongoose.model("employee", contactSchema);
 
-// Get all contacts// Get employees with optional search query
+// Get employees with optional search query and pagination
 app.get("/employee", async (req, res) => {
-  const { search } = req.query;
+  const { search, page = 1, limit = 5 } = req.query;
   try {
     let query = {};
     if (search) {
-      const searchRegex = new RegExp(search, 'i');
+      const searchRegex = new RegExp(search, "i");
       query = {
         $or: [
           { name: searchRegex },
@@ -41,8 +41,11 @@ app.get("/employee", async (req, res) => {
         ],
       };
     }
-    const contacts = await Contact.find(query);
-    res.status(200).json(contacts);
+    const contacts = await Contact.find(query)
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit));
+    const totalContacts = await Contact.countDocuments(query);
+    res.status(200).json({ contacts, totalContacts });
   } catch (error) {
     res.status(500).json({ message: "Error fetching contacts", error });
   }
