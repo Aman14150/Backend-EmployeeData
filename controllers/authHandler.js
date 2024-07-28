@@ -3,26 +3,39 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 
 const registerUser = async (req, res) => {
-    const { name, password, email } = req.body;
+    let { name, password, email } = req.body;
+    name = name.trim();
+    email = email.trim();
+    password = password.trim();
+
+    if (!name || !email || !password) {
+        return res.status(400).json({ error: "Please fill all the fields" });
+    }
 
     try {
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return res.status(400).json({ error: 'Email already exists' });
+            return res.status(409).json({ error: 'Email already exists' });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new User({ name, password: hashedPassword, email });
         await newUser.save();
 
-        res.status(201).json({ message: 'User registered successfully' });
+        res.status(201).json({ message: 'User registered successfully', user: newUser });
     } catch (error) {
         res.status(500).json({ message: 'Error registering user', error });
     }
 };
 
 const loginUser = async (req, res) => {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
+    email = email.trim();
+    password = password.trim();
+
+    if (!email || !password) {
+        return res.status(400).json({ error: "Please fill all the fields" });
+    }
 
     try {
         const user = await User.findOne({ email });
@@ -55,6 +68,15 @@ const getUser = async (req, res) => {
     }
 };
 
+const getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find().select('-password');
+        res.status(200).json(users);
+    } catch (err) {
+        res.status(500).json({ message: 'Error fetching users', error: err });
+    }
+};
+
 const authMiddleware = (req, res, next) => {
     const authHeader = req.header('Authorization');
     if (!authHeader) {
@@ -75,5 +97,6 @@ module.exports = {
     registerUser,
     loginUser,
     getUser,
+    getAllUsers,
     authMiddleware
 };
