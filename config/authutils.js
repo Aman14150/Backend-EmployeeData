@@ -13,12 +13,12 @@ const comparePassword = async (password, hashedPassword) => {
 };
 
 const generateToken = (payload) => {
-  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+  const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
   return token;
 };
 
 const verifyToken = (token) => {
-  const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+  const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
   return decodedToken;
 };
 

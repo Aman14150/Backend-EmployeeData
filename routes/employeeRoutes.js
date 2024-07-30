@@ -1,5 +1,5 @@
 const express = require('express');
-const Employee = require('../models/employeeModel');
+const Employee = require('../Models/employeeModel');
 const { authMiddleware } = require('../controllers/authHandler');
 const router = express.Router();
 

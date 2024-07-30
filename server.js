@@ -2,8 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const connectDb = require('./config/mongoConfig');
-const userRoutes = require('./routes/userRoutes');
-const employeeRoutes = require('./routes/employeeRoutes');
+const userRoutes = require('./Routes/userRoutes');
+const employeeRoutes = require('./Routes/employeeRoutes');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
