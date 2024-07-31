@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const connectDb = require('./Config/mongoConfig');
-const userRoutes = require('./Routes/userRoutes');
+const userRoutes = require('./Routes/userRoutes'); // Renamed from `router` to `userRoutes`
 const employeeRoutes = require('./Routes/employeeRoutes');
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -23,7 +23,7 @@ app.use('/auth', userRoutes);
 // Employee routes
 app.use('/employees', employeeRoutes);
 
-// Error handling middleware (optional but useful for debugging)
+// Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).send('Something broke!');
