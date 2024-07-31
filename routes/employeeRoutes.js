@@ -1,7 +1,8 @@
 const express = require('express');
 const Employee = require('../Models/employeeModel');
-const { authMiddleware } = require('../controllers/authHandler');
+const authMiddleware = require('../Middleware/authmiddleware');
 const router = express.Router();
+
 
 // Get employees with optional search query and pagination
 router.get('/', authMiddleware, async (req, res) => {

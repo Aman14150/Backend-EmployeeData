@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const connectDb = require('./config/mongoConfig');
+const connectDb = require('./Config/mongoConfig');
 const userRoutes = require('./Routes/userRoutes');
 const employeeRoutes = require('./Routes/employeeRoutes');
 const app = express();
@@ -12,13 +12,22 @@ app.use(express.json());
 app.use(cors());
 
 // Connect to MongoDB
-connectDb();
+connectDb().catch(err => {
+    console.error('Failed to connect to MongoDB', err);
+    process.exit(1); // Exit the process with an error code
+});
 
 // Auth routes
-app.use('/api/auth', userRoutes);
+app.use('/auth', userRoutes);
 
 // Employee routes
-app.use('/api/employees', employeeRoutes);
+app.use('/employees', employeeRoutes);
+
+// Error handling middleware (optional but useful for debugging)
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+});
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

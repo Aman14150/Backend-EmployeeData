@@ -1,5 +1,5 @@
 const User = require('../Models/userModel');
-const { generatePassword, comparePassword, generateToken, verifyToken } = require('../config/authutils');
+const { generatePassword, comparePassword, generateToken } = require('../Config/authutils');
 
 const registerUser = async (req, res) => {
   let { name, password, email } = req.body;
@@ -56,48 +56,7 @@ const loginUser = async (req, res) => {
   }
 };
 
-const getUser = async (req, res) => {
-  const userId = req.user;
-  try {
-    const user = await User.findById(userId).select("-password");
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    res.status(200).json(user);
-  } catch (err) {
-    res.status(500).json({ message: "Error fetching user", error: err });
-  }
-};
-
-const getAllUsers = async (req, res) => {
-  try {
-    const users = await User.find().select("-password");
-    res.status(200).json(users);
-  } catch (err) {
-    res.status(500).json({ message: "Error fetching users", error: err });
-  }
-};
-
-const authMiddleware = (req, res, next) => {
-  const authHeader = req.header("Authorization");
-  if (!authHeader) {
-    return res.status(401).json({ message: "No token, authorization denied" });
-  }
-  const token = authHeader.replace("Bearer ", "");
-
-  try {
-    const decoded = verifyToken(token);
-    req.user = decoded.userId;
-    next();
-  } catch (error) {
-    res.status(401).json({ message: "Token is not valid" });
-  }
-};
-
 module.exports = {
   registerUser,
   loginUser,
-  getUser,
-  getAllUsers,
-  authMiddleware,
 };
