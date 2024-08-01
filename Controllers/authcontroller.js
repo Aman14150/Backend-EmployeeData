@@ -3,15 +3,20 @@ const { generatePassword, comparePassword, generateToken } = require('../Config/
 
 // Register a new user
 const registerUser = async (req, res) => {
-  let { name, password, email } = req.body;
+  let { name, password, email, confirmPassword } = req.body;
   name = name.trim();
   email = email.trim();
   password = password.trim();
+  confirmPassword = confirmPassword.trim();
 
-  if (!name || !email || !password) {
+  if (!name || !email || !password || !confirmPassword) {
     return res.status(400).json({ error: "Please fill all the fields" });
   }
 
+  if (password !== confirmPassword) {
+    return res.status(400).json({ error: "Passwords do not match" });
+  }
+  
   try {
     // Check if the email already exists
     const existingUser = await User.findOne({ email });
