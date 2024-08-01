@@ -17,10 +17,8 @@ connectDb().catch(err => {
     process.exit(1); // Exit the process with an error code
 });
 
-// Auth routes
 app.use('/auth', userRoutes);
 
-// Employee routes
 app.use('/employees', employeeRoutes);
 
 // Error handling middleware

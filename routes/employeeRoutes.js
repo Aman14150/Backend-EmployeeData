@@ -18,9 +18,12 @@ router.get('/', authMiddleware, async (req, res) => {
                 ],
             };
         }
+        // Sort by name in ascending order
         const contacts = await Employee.find(query)
+            .sort({ name: 1 }) // Add this line for sorting
             .skip((page - 1) * limit)
             .limit(parseInt(limit));
+        
         const totalContacts = await Employee.countDocuments(query);
         res.status(200).json({ contacts, totalContacts });
     } catch (error) {
@@ -28,7 +31,7 @@ router.get('/', authMiddleware, async (req, res) => {
     }
 });
 
-// Post multiple employees
+// Post a new employee
 router.post('/', authMiddleware, async (req, res) => {
     try {
         const { name, email, phone } = req.body;
